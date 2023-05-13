@@ -1,0 +1,4 @@
+FROM openjdk:8-jre-alpine
+WORKDIR /app
+COPY ./libs/main-1.0-SNAPSHOT.jar /app
+CMD ["java", "-jar", "main-1.0-SNAPSHOT.jar"]

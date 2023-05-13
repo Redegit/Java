@@ -1,0 +1,46 @@
+import com.sun.tools.javac.Main
+
+plugins {
+    id 'java'
+}
+
+group 'org.fa'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+task world {
+    doLast {
+        println 'Hello world!'
+    }
+}
+
+task buildJar(type: Jar) {
+    archiveBaseName.set('main')
+    from(sourceSets.main.output)
+}
+
+task copyJar(type: Copy) {
+    dependsOn("buildJar")
+    mustRunAfter('buildJar')
+    from(buildDir) {
+        include('libs/*.jar')
+    }
+    into(file('docker'))
+}
+
+task buildDocker(type: Exec) {
+    dependsOn('copyJar')
+    commandLine('docker', 'build', '-t', 'main', '.')
+}
+
+task runDocker(type: Exec) {
+    dependsOn('buildDocker')
+    commandLine('docker', 'run', '-p', '8080:8080', 'main')
+}
+
